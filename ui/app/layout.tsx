@@ -20,7 +20,10 @@ const roboto = Roboto({
 });
 
 export const metadata: Metadata = {
-  title: "Djanxt",
+  title: {
+    default: "Djanxt",
+    template: "%s | Djanxt",
+  },
   description: "A Django + Next.js boilerplate",
 };
 
