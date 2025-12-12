@@ -27,25 +27,38 @@ export const auth = betterAuth({
   //     await (ttl ? redis.set(key, value, "EX", ttl) : redis.set(key, value)),
   // },
 
+  // Social Providers
+  // Uncomment and configure the providers you want to use.
+  socialProviders: {
+    // google: {
+    //   clientId: process.env.GOOGLE_CLIENT_ID!,
+    //   clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    // },
+  },
   // Plugins
   plugins: [nextCookies()],
   // Email & password configuration.
   hooks: {
     after: createAuthMiddleware(async (ctx) => {
       // Set last_login after a successful sign-in
-      if (ctx.path !== "/sign-in/email") return;
+      if (ctx.path !== "/sign-in/email" && ctx.path !== "/callback/:id") return;
       const context = ctx.context;
-      await db
-        .update(userTable)
-        .set({ last_login: new Date() })
-        .where(eq(userTable.id, parseInt(context.session?.user.id!)));
+
+      if (context.session?.user) {
+        await db
+          .update(userTable)
+          .set({ last_login: new Date() })
+          .where(eq(userTable.id, parseInt(context.session.user.id!)));
+      }
     }),
   },
   databaseHooks: {
     user: {
       create: {
         before: async (user, context) => {
-          const hashedPassword = await context?.context.password.hash(context?.body.password);
+          if (!context || !context.body || !context.body.password) return { data: user };
+
+          const hashedPassword = await context?.context.password.hash(context.body.password);
           const userWithPassword = { ...user, password: hashedPassword };
           return { data: userWithPassword };
         },
@@ -64,9 +77,14 @@ export const auth = betterAuth({
         ),
     },
   },
+  // Session management
+  session: {
+    modelName: "better_auth_session",
+    cookieCache: { enabled: true, maxAge: 5 * 60 }, // 5 minutes
+  },
+
   // Core database schema config.
-  session: { modelName: "better_auth_session" },
-  account: { modelName: "better_auth_account" },
+  account: { modelName: "better_auth_account", accountLinking: { enabled: true } },
   verification: { modelName: "better_auth_verification" },
   user: {
     modelName: "user_user", // Django naming convention: appName_modelName
@@ -76,8 +94,8 @@ export const auth = betterAuth({
       emailVerified: "email_verified",
     },
     additionalFields: {
-      password: { type: "string", required: true, input: false },
       last_login: { type: "date", required: false, input: false },
+      password: { type: "string", required: false, input: false, defaultValue: "" },
       is_staff: { type: "boolean", defaultValue: false, required: true, input: false },
       is_active: { type: "boolean", defaultValue: true, required: true, input: false },
       is_superuser: { type: "boolean", defaultValue: false, required: true, input: false },
@@ -90,3 +108,5 @@ export const auth = betterAuth({
     },
   },
 });
+
+export type Session = typeof auth.$Infer.Session;
