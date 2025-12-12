@@ -1,8 +1,9 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { redirect, usePathname } from "next/navigation";
 
 import Box from "@mui/material/Box";
+import LinearProgress from "@mui/material/LinearProgress";
 import BottomNavigation from "@mui/material/BottomNavigation";
 import BottomNavigationAction from "@mui/material/BottomNavigationAction";
 
@@ -13,18 +14,39 @@ import Dashboard from "@mui/icons-material/Dashboard";
 import PersonAdd from "@mui/icons-material/PersonAdd";
 
 import Link from "@/components/Link";
-import { useSession } from "@/lib/auth-client";
+import { signOut, useSession } from "@/lib/auth-client";
 
 const signedInLinks = [
-  { label: "Home", icon: <Home />, href: "/" },
-  { label: "Logout", icon: <Logout />, href: "/logout" },
-  { label: "Dashboard", icon: <Dashboard />, href: "/dashboard" },
+  <BottomNavigationAction
+    key="/dashboard"
+    value="/dashboard"
+    component={Link}
+    label="Dashboard"
+    icon={<Dashboard />}
+    href="/dashboard"
+  />,
+  <BottomNavigationAction
+    key="/logout"
+    value="/logout"
+    label="Logout"
+    icon={<Logout />}
+    onClick={async () => {
+      await signOut();
+      redirect("/login");
+    }}
+  />,
 ];
 
 const signedOutLinks = [
-  { label: "Home", icon: <Home />, href: "/" },
-  { label: "Login", icon: <Key />, href: "/login" },
-  { label: "Signup", icon: <PersonAdd />, href: "/signup" },
+  <BottomNavigationAction key="/login" value="/login" component={Link} label="Login" icon={<Key />} href="/login" />,
+  <BottomNavigationAction
+    key="/signup"
+    value="/signup"
+    component={Link}
+    label="Signup"
+    icon={<PersonAdd />}
+    href="/signup"
+  />,
 ];
 
 export default function BottomNavbar() {
@@ -32,33 +54,14 @@ export default function BottomNavbar() {
   const { isPending, data: session } = useSession();
 
   if (isPending) {
-    return null;
+    return <LinearProgress />;
   }
 
   return (
     <Box>
       <BottomNavigation showLabels value={pathname}>
-        {session
-          ? signedInLinks.map((link) => (
-              <BottomNavigationAction
-                key={link.href}
-                component={Link}
-                label={link.label}
-                icon={link.icon}
-                value={link.href}
-                href={link.href}
-              />
-            ))
-          : signedOutLinks.map((link) => (
-              <BottomNavigationAction
-                key={link.href}
-                component={Link}
-                label={link.label}
-                icon={link.icon}
-                value={link.href}
-                href={link.href}
-              />
-            ))}
+        <BottomNavigationAction value="/" component={Link} label="Home" icon={<Home />} href="/" />
+        {session ? signedInLinks : signedOutLinks}
       </BottomNavigation>
     </Box>
   );
