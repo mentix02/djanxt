@@ -1,6 +1,7 @@
 import secrets
 
 from django.db import models
+from django.core.validators import URLValidator
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.base_user import BaseUserManager
@@ -52,12 +53,13 @@ class User(AbstractUser):
     first_name = None
 
     updated_at = models.DateTimeField(auto_now=True)
-    image = models.URLField(blank=True, null=True, default=None)
+    image = models.TextField(validators=[URLValidator()], blank=True, null=True, default=None)
 
     email_verified = models.BooleanField(default=False)
     email = models.EmailField(_('email address'), unique=True)
+    password = models.CharField(max_length=128, blank=True, db_default='')
 
-    name = models.CharField(blank=True, max_length=255, default='')
+    name = models.TextField(blank=True, default='')
     access_key = models.CharField(max_length=32, default=generate_secret_key)
 
     REQUIRED_FIELDS = []
