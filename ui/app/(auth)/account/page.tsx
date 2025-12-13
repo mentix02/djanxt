@@ -10,7 +10,7 @@ import { auth } from "@/lib/auth";
 export default async function Page() {
   const session = await auth.api.getSession({ headers: await headers() });
 
-  if (!session) redirect("/login?next=/dashboard");
+  if (!session) redirect("/login?next=/account");
 
   const user = session.user;
 
@@ -26,7 +26,7 @@ export default async function Page() {
           }}
         >
           <Typography variant="h5" component="h1" align="center">
-            Welcome to your dashboard, {user.name}!
+            Welcome to your account, {user.name}!
           </Typography>
         </Paper>
       </Grid>

@@ -3,7 +3,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { auth } from "@/lib/auth";
-import SignupForm from "@/components/SignupForm";
+import SignupForm from "@/components/auth/SignupForm";
 
 export const metadata: Metadata = {
   title: "Sign Up",
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default async function Page() {
   const session = await auth.api.getSession({ headers: await headers() });
 
-  if (session) redirect("/dashboard");
+  if (session) redirect("/account");
 
   return <SignupForm />;
 }

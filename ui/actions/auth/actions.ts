@@ -41,7 +41,7 @@ export async function signUpAction(previousState: SignupFormState, formData: For
   }
 
   refresh();
-  redirect("/dashboard");
+  redirect("/account");
 }
 
 export async function signInAction(previousState: SigninFormState, formData: FormData): Promise<SigninFormState> {
@@ -70,5 +70,5 @@ export async function signInAction(previousState: SigninFormState, formData: For
   }
 
   refresh();
-  redirect("/dashboard");
+  redirect("/account");
 }

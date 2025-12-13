@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef, useEffect } from "react";
-import { redirect } from "next/navigation";
 
 import Box from "@mui/material/Box";
 import Link from "@mui/material/Link";
@@ -12,42 +11,44 @@ import Button from "@mui/material/Button";
 import Divider from "@mui/material/Divider";
 import Typography from "@mui/material/Typography";
 import LinearProgress from "@mui/material/LinearProgress";
+import FormControlLabel from "@mui/material/FormControlLabel";
 
-import { signUp, signIn } from "@/lib/auth-client";
+import { signIn } from "@/lib/auth-client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { TextFieldElement } from "react-hook-form-mui";
 import { useForm, SubmitHandler } from "react-hook-form";
+import { CheckboxElement, TextFieldElement } from "react-hook-form-mui";
 
 import Google from "@mui/icons-material/Google";
 
 import NextLink from "@/components/Link";
-import { SignupData, SignupDataSchema } from "@/actions/auth/types";
+import { SigninData, SigninDataSchema } from "@/actions/auth/types";
 
-export default function SignupForm() {
-  const nameRef = useRef<HTMLInputElement>(null);
+export default function LoginForm() {
+  const emailRef = useRef<HTMLInputElement>(null);
 
   const {
     control,
     setError,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<SignupData>({
-    resolver: zodResolver(SignupDataSchema),
+  } = useForm<SigninData>({
+    resolver: zodResolver(SigninDataSchema),
   });
 
-  const signUpHandler: SubmitHandler<SignupData> = async (values) => {
-    const { data, error } = await signUp.email({ ...values });
-    if (error) setError("root.non_field_error", { message: error.message, type: error.statusText });
-    if (data) redirect("/dashboard");
+  const signInHandler: SubmitHandler<SigninData> = async (values) => {
+    const { error } = await signIn.email({ ...values, callbackURL: "/account" });
+    if (error) {
+      setError("root.non_field_error", { message: error.message, type: error.statusText });
+    }
   };
 
-  const handleGoogleSignUp = async () => {
-    const { error } = await signIn.social({ provider: "google", callbackURL: "/dashboard" });
+  const handleGoogleSignIn = async () => {
+    const { error } = await signIn.social({ provider: "google", callbackURL: "/account" });
     if (error) setError("root.non_field_error", { message: error.message, type: error.statusText });
   };
 
   useEffect(() => {
-    nameRef.current?.focus();
+    emailRef.current?.focus();
   }, []);
 
   return (
@@ -62,13 +63,13 @@ export default function SignupForm() {
             backgroundColor: theme.palette.background.paper,
           })}
         >
-          <Box component="form" onSubmit={handleSubmit(signUpHandler)} noValidate>
+          <Box component="form" onSubmit={handleSubmit(signInHandler)} noValidate>
             <Stack alignItems="center" spacing={1} sx={{ mb: 2 }}>
-              <Typography variant="h5" component="h1">
-                Create your account
+              <Typography variant="h5" component="h1" gutterBottom>
+                Welcome back
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Join now — it only takes a minute
+                Sign in to your account
               </Typography>
             </Stack>
 
@@ -76,21 +77,12 @@ export default function SignupForm() {
               <TextFieldElement
                 required
                 fullWidth
-                name="name"
-                type="text"
-                label="Full name"
-                control={control}
-                inputRef={nameRef}
-                autoComplete="name"
-              />
-              <TextFieldElement
-                label="Email"
                 name="email"
                 type="email"
-                required
-                fullWidth
-                autoComplete="email"
+                label="Email"
                 control={control}
+                inputRef={emailRef}
+                autoComplete="email"
               />
               <TextFieldElement
                 required
@@ -99,8 +91,10 @@ export default function SignupForm() {
                 type="password"
                 label="Password"
                 control={control}
-                autoComplete="new-password"
+                autoComplete="current-password"
               />
+
+              <FormControlLabel control={<CheckboxElement name="rememberMe" control={control} />} label="Remember me" />
 
               {errors.root?.non_field_error && (
                 <Typography variant="body2" color="error" sx={{ textAlign: "center" }}>
@@ -109,15 +103,15 @@ export default function SignupForm() {
               )}
 
               <Button type="submit" variant="contained" fullWidth sx={{ py: 1.25 }}>
-                Create account
+                Sign in
               </Button>
 
               {isSubmitting && <LinearProgress />}
 
-              <Typography variant="body2" sx={{ textAlign: "center", mt: 1 }}>
-                Already have an account?{" "}
-                <Link component={NextLink} href="/login">
-                  Log in
+              <Typography variant="body2" sx={{ textAlign: "center" }}>
+                Don't have an account?{" "}
+                <Link component={NextLink} href="/signup">
+                  Sign up
                 </Link>
               </Typography>
 
@@ -132,10 +126,10 @@ export default function SignupForm() {
               <Button
                 fullWidth
                 variant="outlined"
-                onClick={handleGoogleSignUp}
+                onClick={handleGoogleSignIn}
                 startIcon={<Google sx={{ width: 20, height: 20 }} />}
               >
-                Sign up with Google
+                Sign in with Google
               </Button>
             </Stack>
           </Box>

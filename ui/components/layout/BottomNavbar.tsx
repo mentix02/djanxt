@@ -10,20 +10,20 @@ import BottomNavigationAction from "@mui/material/BottomNavigationAction";
 import Key from "@mui/icons-material/Key";
 import Home from "@mui/icons-material/Home";
 import Logout from "@mui/icons-material/Logout";
-import Dashboard from "@mui/icons-material/Dashboard";
 import PersonAdd from "@mui/icons-material/PersonAdd";
+import AccountCircle from "@mui/icons-material/AccountCircle";
 
 import Link from "@/components/Link";
 import { signOut, useSession } from "@/lib/auth-client";
 
 const signedInLinks = [
   <BottomNavigationAction
-    key="/dashboard"
-    value="/dashboard"
+    key="/account"
+    value="/account"
     component={Link}
-    label="Dashboard"
-    icon={<Dashboard />}
-    href="/dashboard"
+    label="Account"
+    icon={<AccountCircle />}
+    href="/account"
   />,
   <BottomNavigationAction
     key="/logout"

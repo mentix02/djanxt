@@ -8,7 +8,7 @@ import Typography from "@mui/material/Typography";
 import CardContent from "@mui/material/CardContent";
 
 import Link from "@/components/Link";
-import FeatureCard from "@/components/FeatureCard";
+import FeatureCard from "@/components/landing/FeatureCard";
 
 interface Feature {
   title: string;

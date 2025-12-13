@@ -13,7 +13,7 @@ export default function OneTap() {
     if (!session && "oneTap" in authClient) {
       (authClient as any).oneTap({
         fetchOptions: {
-          onSuccess: () => router.push("/dashboard"),
+          onSuccess: () => router.push("/account"),
         },
       });
     }

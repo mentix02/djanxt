@@ -10,8 +10,8 @@ import { AppRouterCacheProvider } from "@mui/material-nextjs/v16-appRouter";
 
 import "./globals.css";
 import theme from "@/theme";
-import OneTap from "@/components/OneTap";
-import BottomNavbar from "@/components/BottomNavbar";
+import OneTap from "@/components/auth/OneTap";
+import BottomNavbar from "@/components/layout/BottomNavbar";
 
 const roboto = Roboto({
   display: "swap",
