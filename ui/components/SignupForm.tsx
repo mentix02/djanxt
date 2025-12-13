@@ -1,6 +1,7 @@
 "use client";
 
-import { useRef, useEffect, useActionState } from "react";
+import { useRef, useEffect } from "react";
+import { redirect } from "next/navigation";
 
 import Box from "@mui/material/Box";
 import Link from "@mui/material/Link";
@@ -35,8 +36,9 @@ export default function SignupForm() {
   });
 
   const signUpHandler: SubmitHandler<SignupData> = async (values) => {
-    const { error } = await signUp.email({ ...values, callbackURL: "/dashboard" });
+    const { data, error } = await signUp.email({ ...values });
     if (error) setError("root.non_field_error", { message: error.message, type: error.statusText });
+    if (data) redirect("/dashboard");
   };
 
   const handleGoogleSignUp = async () => {
