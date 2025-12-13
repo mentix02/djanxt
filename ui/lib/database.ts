@@ -4,6 +4,7 @@ import { text, varchar, bigint, pgTable, boolean, timestamp } from "drizzle-orm/
 
 export const pgPool = new Pool({ connectionString: process.env.DATABASE_URL });
 
+const DJ_ARGON_PREFIX = "argon2";
 const db = drizzle({ client: pgPool });
 
 export const userTable = pgTable("user_user", {
@@ -32,3 +33,18 @@ export const userTable = pgTable("user_user", {
 });
 
 export default db;
+
+export const hashPassword = async (password: string) =>
+  DJ_ARGON_PREFIX + (await Bun.password.hash(password, { timeCost: 2, memoryCost: 102400, algorithm: "argon2id" }));
+
+interface VerifyPasswordArgs {
+  hash: string;
+  password: string;
+}
+
+export const verifyPassword = async ({ hash, password }: VerifyPasswordArgs): Promise<boolean> =>
+  await Bun.password.verify(
+    password,
+    hash.startsWith(DJ_ARGON_PREFIX) ? hash.substring(DJ_ARGON_PREFIX.length) : hash,
+    "argon2id",
+  );

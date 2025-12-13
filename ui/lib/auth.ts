@@ -3,12 +3,12 @@ import * as crypto from "crypto";
 
 import { eq } from "drizzle-orm";
 import { betterAuth } from "better-auth";
-import { nextCookies } from "better-auth/next-js";
 import { createAuthMiddleware } from "better-auth/api";
+// Plugins
+// import { oneTap } from "better-auth/plugins";
+import { nextCookies } from "better-auth/next-js";
 
-import db, { pgPool, userTable } from "@/lib/database";
-
-const DJ_ARGON_PREFIX = "argon2";
+import db, { pgPool, userTable, hashPassword, verifyPassword } from "@/lib/database";
 
 export const auth = betterAuth({
   // Storages
@@ -36,7 +36,11 @@ export const auth = betterAuth({
     // },
   },
   // Plugins
-  plugins: [nextCookies()],
+  plugins: [
+    // Uncomment to enable one-tap sign-in by Google
+    // oneTap(),
+    nextCookies(),
+  ],
   // Email & password configuration.
   hooks: {
     after: createAuthMiddleware(async (ctx) => {
@@ -67,15 +71,7 @@ export const auth = betterAuth({
   },
   emailAndPassword: {
     enabled: true,
-    password: {
-      hash: async (password: string) => DJ_ARGON_PREFIX + (await Bun.password.hash(password, "argon2id")),
-      verify: async ({ hash, password }): Promise<boolean> =>
-        await Bun.password.verify(
-          password,
-          hash.startsWith(DJ_ARGON_PREFIX) ? hash.substring(DJ_ARGON_PREFIX.length) : hash,
-          "argon2id",
-        ),
-    },
+    password: { hash: hashPassword, verify: verifyPassword },
   },
   // Session management
   session: {
