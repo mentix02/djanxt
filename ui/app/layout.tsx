@@ -10,6 +10,7 @@ import { AppRouterCacheProvider } from "@mui/material-nextjs/v16-appRouter";
 
 import "./globals.css";
 import theme from "@/theme";
+import OneTap from "@/components/OneTap";
 import BottomNavbar from "@/components/BottomNavbar";
 
 const roboto = Roboto({
@@ -35,6 +36,7 @@ export default async function RootLayout({ children }: Readonly<PropsWithChildre
           <ThemeProvider theme={theme}>
             <CssBaseline />
             <Box sx={{ pb: 7 }}>
+              <OneTap />
               <Box>{children}</Box>
               <Paper elevation={3} sx={{ position: "fixed", bottom: 0, left: 0, right: 0 }}>
                 <BottomNavbar />
