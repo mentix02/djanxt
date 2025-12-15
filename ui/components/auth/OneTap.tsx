@@ -10,7 +10,7 @@ export default function OneTap() {
   const { data: session } = useSession();
 
   useEffect(() => {
-    if (!session && "oneTap" in authClient) {
+    if (!session && (authClient as any)["oneTap"] !== undefined) {
       (authClient as any).oneTap({
         fetchOptions: {
           onSuccess: () => router.push("/account"),

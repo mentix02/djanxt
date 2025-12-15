@@ -108,7 +108,7 @@ export default function SignupForm() {
                 </Typography>
               )}
 
-              <Button type="submit" variant="contained" fullWidth sx={{ py: 1.25 }}>
+              <Button type="submit" variant="contained" fullWidth sx={{ py: 1.25 }} loading={isSubmitting}>
                 Create account
               </Button>
 
