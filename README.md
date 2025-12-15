@@ -37,7 +37,7 @@ pip install -r requirements.txt
 
 Now create an .env file in the root directory with the following content:
 
-```
+```dotenv
 DEBUG=True
 SECRET_KEY=<your_django_secret_key>
 DATABASE_URL=postgres://<db_user>:<db_password>@<db_host>:<db_port>/<db_name>
@@ -58,6 +58,14 @@ Navigate to the [`ui`](ui) directory and install dependencies:
 ```bash
 cd ui
 bun install
+```
+
+Create an `.env` file in the `ui` directory with the following content:
+
+```dotenv
+BETTER_AUTH_URL=http://localhost:3000
+DATABASE_URL=<same_database_url_as_backend>
+BETTER_AUTH_SECRET=<your_better_auth_secret_key>
 ```
 
 ## Running the Application

@@ -16,7 +16,7 @@ One of the key features of BetterAuth is how it manages the databases for you. U
 
 ### Sharing the Database
 
-Since Next.js is more of a "frontend" framework, we use Django (which is more of the "backend" framework) to manage the databases. The [`models.py`](../apps/user/models.py) file under the `user` app contains the models for the database required by BetterAuth. Django + BetterAuth share the `user_user`. The extensible [`lib/auth.ts`](lib/auth.ts) file contains the authentication logic along with the customized table fields and names.
+Since Next.js is more of a "frontend" framework, we use Django (which is more of the "backend" framework) to manage the databases. The [`models.py`](../apps/user/models.py) file under the `user` app contains the models for the database required by BetterAuth. Django + BetterAuth share the `user_user` table. The extensible [`lib/auth.ts`](lib/auth.ts) file contains the authentication logic along with the customized table fields and names.
 
 ### Password Hashing
 
