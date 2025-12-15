@@ -2,15 +2,16 @@
 import * as crypto from "crypto";
 
 import { eq } from "drizzle-orm";
-import { betterAuth } from "better-auth";
 import { createAuthMiddleware } from "better-auth/api";
+import { betterAuth, BetterAuthOptions } from "better-auth";
 // Plugins
 // import { oneTap } from "better-auth/plugins";
 import { nextCookies } from "better-auth/next-js";
+import { customSession } from "better-auth/plugins";
 
 import db, { pgPool, userTable, hashPassword, verifyPassword } from "@/lib/database";
 
-export const auth = betterAuth({
+const betterAuthOptions = {
   // Storages
   database: pgPool,
   advanced: { database: { generateId: "serial" } },
@@ -48,11 +49,11 @@ export const auth = betterAuth({
       if (ctx.path !== "/sign-in/email" && ctx.path !== "/callback/:id") return;
       const context = ctx.context;
 
-      if (context.session?.user) {
+      if (context.newSession?.user) {
         await db
           .update(userTable)
           .set({ last_login: new Date() })
-          .where(eq(userTable.id, parseInt(context.session.user.id!)));
+          .where(eq(userTable.id, parseInt(context.newSession.user.id!)));
       }
     }),
   },
@@ -103,6 +104,19 @@ export const auth = betterAuth({
       },
     },
   },
+} satisfies BetterAuthOptions;
+
+export const auth = betterAuth({
+  ...betterAuthOptions,
+  plugins: [
+    // Customize the session to omit the password field.
+    // Sorry for this fuckery but this is the recommended approach by BetterAuth.
+    ...(betterAuthOptions.plugins ?? []),
+    customSession(async ({ user, session }) => {
+      const { password, ...userWithoutPassword } = user;
+      return { user: userWithoutPassword, session };
+    }, betterAuthOptions),
+  ],
 });
 
 export type Session = typeof auth.$Infer.Session;
