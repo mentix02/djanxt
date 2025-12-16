@@ -8,6 +8,7 @@
     "start": "bun run --bun next start"
   },
   "dependencies": {
+    "@better-fetch/fetch": "^1.1.21",
     "@emotion/cache": "^11.14.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
@@ -18,11 +19,13 @@
     "better-auth": "^1.4.6",
     "drizzle-orm": "^0.45.1",
     "next": "16.0.9",
+    "notistack": "^3.0.2",
     "pg": "^8.16.3",
     "react": "19.2.1",
     "react-dom": "19.2.1",
     "react-hook-form": "^7.68.0",
     "react-hook-form-mui": "^8.2.0",
+    "use-debounce": "^10.0.6",
     "zod": "^4.1.13"
   },
   "devDependencies": {
