@@ -1,0 +1,20 @@
+meta {
+  name: Delete Task
+  type: http
+  seq: 5
+}
+
+delete {
+  url: http://localhost:8000/api/todo/:skey/
+  body: none
+  auth: inherit
+}
+
+params:path {
+  skey: 6c072e98-3797-4ec2-b484-f08fc1c8576a
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -1,0 +1,27 @@
+meta {
+  name: List Tasks
+  type: http
+  seq: 1
+}
+
+get {
+  url: http://localhost:8000/api/todo/
+  body: none
+  auth: none
+}
+
+params:query {
+  ~page: 1
+  ~ordering: -timestamp
+  ~q: 
+  ~completed: 
+}
+
+headers {
+  Authorization: Token {{access_key}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

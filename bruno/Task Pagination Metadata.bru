@@ -1,0 +1,20 @@
+meta {
+  name: Task Pagination Metadata
+  type: http
+  seq: 6
+}
+
+get {
+  url: http://localhost:8000/api/todo/metadata/
+  body: none
+  auth: inherit
+}
+
+headers {
+  Authorization: Token {{access_key}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

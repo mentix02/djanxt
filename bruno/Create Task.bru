@@ -1,0 +1,28 @@
+meta {
+  name: Create Task
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:8000/api/todo/
+  body: json
+  auth: inherit
+}
+
+headers {
+  Authorization: Token {{access_key}}
+}
+
+body:json {
+  {
+    "content": "{{$randomLoremSentence}}",
+    "description": "{{$randomLoremParagraphs}}",
+    "completed": "{{$randomBoolean}}"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

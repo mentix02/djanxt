@@ -1,0 +1,28 @@
+meta {
+  name: Update Task
+  type: http
+  seq: 5
+}
+
+patch {
+  url: http://localhost:8000/api/todo/:skey/
+  body: formUrlEncoded
+  auth: inherit
+}
+
+params:path {
+  skey: 6c072e98-3797-4ec2-b484-f08fc1c8576a
+}
+
+headers {
+  Authorization: Token {{access_key}}
+}
+
+body:form-urlencoded {
+  completed: true
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
