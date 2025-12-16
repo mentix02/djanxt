@@ -36,10 +36,17 @@ export default function LoginForm() {
   });
 
   const signInHandler: SubmitHandler<SigninData> = async (values) => {
-    const { error } = await signIn.email({ ...values, callbackURL: "/account" });
-    if (error) {
-      setError("root.non_field_error", { message: error.message, type: error.statusText });
-    }
+    // noinspection JSUnusedGlobalSymbols
+    await signIn.email(
+      { ...values, callbackURL: "/account" },
+      {
+        onError: (ctx) => {
+          if (ctx.error.status === 403)
+            setError("root.non_field_error", { message: "Email not verified. Please check your inbox." });
+          else setError("root.non_field_error", { message: ctx.error.message, type: ctx.error.statusText });
+        },
+      },
+    );
   };
 
   const handleGoogleSignIn = async () => {
