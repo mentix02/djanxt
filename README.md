@@ -4,11 +4,18 @@ An opinionated Django + Next.js template.
 
 ## Architecture
 
-- Backend: Plain Django - no DRF
-- Frontend: Next.js with Bun
-  - Material UI
-  - Better-Auth
-- Database: PostgreSQL
+- Backend (Python)
+  - Django 6.0
+  - Psycopg 3
+  - Argon2 (argon2-cffi)
+  - Django REST Framework 3.16
+- Frontend (TypeScript)
+  - Bun 1.3
+  - React 19
+  - Next.js 16
+  - Material UI 7.3
+  - Better-Auth 1.4
+- Database (PostgreSQL 17)
 
 Django uses a custom authentication middleware inspired by DRF's token authentication.
 Each user has an `access_key` field generated on creation, used by the frontend for making
@@ -63,7 +70,9 @@ bun install
 Create an `.env` file in the `ui` directory with the following content:
 
 ```dotenv
+BACKEND_URL=http://localhost:8000
 BETTER_AUTH_URL=http://localhost:3000
+
 DATABASE_URL=<same_database_url_as_backend>
 BETTER_AUTH_SECRET=<your_better_auth_secret_key>
 ```
