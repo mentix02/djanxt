@@ -1,3 +1,4 @@
+from sys import argv
 from pathlib import Path
 
 from environ import Env
@@ -13,6 +14,7 @@ if ENV_FILE.is_file():
 SECRET_KEY = env('SECRET_KEY')
 
 DEBUG = env('DEBUG')
+IS_TEST = any('test' in arg for arg in argv)
 
 if DEBUG:
     ALLOWED_HOSTS = ['*']
@@ -28,7 +30,10 @@ DEFAULT_APPS = [
     'django.contrib.staticfiles',
 ]
 
-THIRD_PARTY_APPS = []
+THIRD_PARTY_APPS = [
+    'django_filters',
+    'rest_framework',
+]
 
 LOCAL_APPS = [
     'apps.user.apps.UserConfig',
@@ -42,7 +47,9 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'apps.user.middleware.AccessKeyAuthMiddleware',
+    # Uncomment if you're not using DRF but still need
+    # a way to authenticate via access keys:
+    # 'apps.user.middleware.AccessKeyAuthMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -66,16 +73,24 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'djanxt.wsgi.application'
 
-DATABASES = {
-    'default': env.db(),
-}
+if IS_TEST:
+    DATABASES = {
+        'default': {
+            'NAME': ':memory:',
+            'ENGINE': 'django.db.backends.sqlite3',
+        }
+    }
+else:
+    DATABASES = {
+        'default': env.db(),
+    }
 
 PASSWORD_HASHERS = [
-    "apps.user.hashers.Argon2PasswordHasher",
-    "django.contrib.auth.hashers.PBKDF2PasswordHasher",
-    "django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher",
-    "django.contrib.auth.hashers.BCryptSHA256PasswordHasher",
-    "django.contrib.auth.hashers.ScryptPasswordHasher",
+    'apps.user.hashers.Argon2PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
+    'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
+    'django.contrib.auth.hashers.ScryptPasswordHasher',
 ]
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -87,6 +102,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 AUTH_USER_MODEL = 'user.User'
 
+DEFAULT_TEST_USER_PASSWORD = 'abcd'
+
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
@@ -96,3 +113,17 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = 'static/'
+
+if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+REST_FRAMEWORK = {
+    'PAGE_SIZE': 15,
+    'SEARCH_PARAM': 'q',
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+        'apps.user.authentication.AccessKeyAuthentication',
+    ],
+}
