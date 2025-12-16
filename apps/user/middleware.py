@@ -7,7 +7,7 @@ from apps.user.models import User
 class AccessKeyAuthMiddleware:
     """
     Custom middleware to authenticate a user based on an 'Authorization: Token <access_key>'
-    header in the request.
+    header in the request. If you're not using DRF, you can use this middleware to set request.user.
     """
 
     def __init__(self, get_response):
