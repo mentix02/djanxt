@@ -20,7 +20,7 @@ export default function AddTask() {
   return (
     <Container>
       <Tooltip title="Add Task" placement="left">
-        <Fab color="primary" aria-label="add" onClick={showDialog} sx={{ position: "absolute", bottom: 80, right: 56 }}>
+        <Fab color="primary" aria-label="add" onClick={showDialog} sx={{ position: "fixed", bottom: 64, right: 32 }}>
           <AddIcon />
         </Fab>
       </Tooltip>
