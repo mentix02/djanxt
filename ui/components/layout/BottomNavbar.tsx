@@ -6,6 +6,7 @@ import Box from "@mui/material/Box";
 import LinearProgress from "@mui/material/LinearProgress";
 import BottomNavigation from "@mui/material/BottomNavigation";
 import BottomNavigationAction from "@mui/material/BottomNavigationAction";
+import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 
 import Key from "@mui/icons-material/Key";
 import Home from "@mui/icons-material/Home";
@@ -18,12 +19,20 @@ import { signOut, useSession } from "@/lib/auth-client";
 
 const signedInLinks = [
   <BottomNavigationAction
+    key="/tasks"
+    value="/tasks"
+    label="Tasks"
+    href="/tasks"
+    component={Link}
+    icon={<FormatListBulletedIcon />}
+  />,
+  <BottomNavigationAction
     key="/account"
+    label="Account"
+    href="/account"
     value="/account"
     component={Link}
-    label="Account"
     icon={<AccountCircle />}
-    href="/account"
   />,
   <BottomNavigationAction
     key="/logout"
@@ -38,14 +47,15 @@ const signedInLinks = [
 ];
 
 const signedOutLinks = [
+  <BottomNavigationAction key="/" value="/" component={Link} label="Home" icon={<Home />} href="/" />,
   <BottomNavigationAction key="/login" value="/login" component={Link} label="Login" icon={<Key />} href="/login" />,
   <BottomNavigationAction
     key="/signup"
+    href="/signup"
+    label="Signup"
     value="/signup"
     component={Link}
-    label="Signup"
     icon={<PersonAdd />}
-    href="/signup"
   />,
 ];
 
@@ -60,7 +70,6 @@ export default function BottomNavbar() {
   return (
     <Box>
       <BottomNavigation showLabels value={pathname}>
-        <BottomNavigationAction value="/" component={Link} label="Home" icon={<Home />} href="/" />
         {session ? signedInLinks : signedOutLinks}
       </BottomNavigation>
     </Box>
