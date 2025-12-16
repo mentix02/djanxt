@@ -1,3 +1,4 @@
+import { Metadata } from "next";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -6,6 +7,10 @@ import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 
 import { auth } from "@/lib/auth";
+
+export const metadata: Metadata = {
+  title: "Account",
+};
 
 export default async function Page() {
   const session = await auth.api.getSession({ headers: await headers() });
