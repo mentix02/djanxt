@@ -1,5 +1,6 @@
 from rest_framework import status
 from rest_framework.request import Request
+from django.db.models.query_utils import Q
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
 from rest_framework.permissions import IsAuthenticated
@@ -17,10 +18,13 @@ class TaskPaginationMetadataAPIView(GenericAPIView):
     serializer_class = TaskPaginationMetadataSerializer
 
     def get(self, request: Request) -> Response:
-        metadata = {
-            'page_size': api_settings.PAGE_SIZE,
-            'task_count': Task.objects.filter(user=request.user).count(),
-        }
+
+        queryset = Task.objects.filter(user=self.request.user)
+
+        if q := request.GET.get('q', '').strip():
+            queryset = queryset.filter(Q(content__icontains=q) | Q(skey__iexact=q))
+
+        metadata = {'task_count': queryset.count(), 'page_size': api_settings.PAGE_SIZE}
         serializer = self.serializer_class(data=metadata, context={'request': request})
         serializer.is_valid(raise_exception=True)
 
