@@ -5,10 +5,10 @@ import { eq } from "drizzle-orm";
 import { createAuthMiddleware } from "better-auth/api";
 import { betterAuth, BetterAuthOptions } from "better-auth";
 // Plugins
-// import { oneTap } from "better-auth/plugins";
 import { nextCookies } from "better-auth/next-js";
 import { customSession } from "better-auth/plugins";
 
+import { sendVerificationEmail, sendResetPasswordEmail } from "@/lib/email";
 import db, { pgPool, userTable, hashPassword, verifyPassword } from "@/lib/database";
 
 const betterAuthOptions = {
@@ -31,17 +31,22 @@ const betterAuthOptions = {
   // Social Providers
   // Uncomment and configure the providers you want to use.
   socialProviders: {
-    // google: {
-    //   clientId: process.env.GOOGLE_CLIENT_ID!,
-    //   clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    // },
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    },
   },
   // Plugins
   plugins: [
     // Uncomment to enable one-tap sign-in by Google
-    // oneTap(),
     nextCookies(),
   ],
+  // Email Verification
+  emailVerification: {
+    sendOnSignIn: true,
+    sendOnSignUp: true,
+    sendVerificationEmail: sendVerificationEmail,
+  },
   // Email & password configuration.
   hooks: {
     after: createAuthMiddleware(async (ctx) => {
@@ -72,6 +77,8 @@ const betterAuthOptions = {
   },
   emailAndPassword: {
     enabled: true,
+    requireEmailVerification: true,
+    sendResetPassword: sendResetPasswordEmail,
     password: { hash: hashPassword, verify: verifyPassword },
   },
   // Session management
@@ -109,7 +116,7 @@ const betterAuthOptions = {
 export const auth = betterAuth({
   ...betterAuthOptions,
   plugins: [
-    // Customize the session to omit the password field.
+    // Customise the session to omit the password field.
     // Sorry for this fuckery but this is the recommended approach by BetterAuth.
     ...(betterAuthOptions.plugins ?? []),
     customSession(async ({ user, session }) => {
