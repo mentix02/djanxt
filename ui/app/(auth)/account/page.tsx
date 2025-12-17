@@ -4,9 +4,9 @@ import { redirect } from "next/navigation";
 
 import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
-import Typography from "@mui/material/Typography";
 
 import { auth } from "@/lib/auth";
+import UpdateAccountForm from "@/components/auth/UpdateAccountForm";
 
 export const metadata: Metadata = {
   title: "Account",
@@ -17,22 +17,18 @@ export default async function Page() {
 
   if (!session) redirect("/login?next=/account");
 
-  const user = session.user;
-
   return (
     <Grid container alignItems="center" justifyContent="center" minHeight="90dvh">
-      <Grid size={{ xs: 8, md: 8, lg: 6 }}>
+      <Grid size={{ xs: 12, sm: 12, md: 8, lg: 6 }}>
         <Paper
           elevation={3}
           sx={{
-            p: { xs: 3, sm: 4 },
-            borderRadius: 3,
             boxShadow: 4,
+            borderRadius: 3,
+            p: { xs: 3, sm: 4 },
           }}
         >
-          <Typography variant="h5" component="h1" align="center">
-            Welcome to your account, {user.name}!
-          </Typography>
+          <UpdateAccountForm />
         </Paper>
       </Grid>
     </Grid>
