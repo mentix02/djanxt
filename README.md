@@ -73,6 +73,8 @@ Create an `.env` file in the `ui` directory with the following content:
 BACKEND_URL=http://localhost:8000
 BETTER_AUTH_URL=http://localhost:3000
 
+BACKEND_URL=http://localhost:8000
+
 DATABASE_URL=<same_database_url_as_backend>
 BETTER_AUTH_SECRET=<your_better_auth_secret_key>
 ```
