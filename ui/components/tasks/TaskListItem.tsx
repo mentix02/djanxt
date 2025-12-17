@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import clx from "@/components/tasks/TaskListItem.module.css";
+import { useRouter } from "next/navigation";
 
 import ListItem from "@mui/material/ListItem";
 import Checkbox from "@mui/material/Checkbox";
@@ -10,46 +10,43 @@ import ListItemText from "@mui/material/ListItemText";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemButton from "@mui/material/ListItemButton";
 
-import DeleteIcon from "@mui/icons-material/Delete";
+import Visibility from "@mui/icons-material/Visibility";
 
+import { editTaskAction } from "@/actions/tasks/actions";
+import clx from "@/components/tasks/TaskListItem.module.css";
 import { TaskListItem as TaskListItemProps } from "@/actions/tasks/types";
-import { editTaskListItem, deleteTaskListItem } from "@/actions/tasks/actions";
 
 export default function TaskListItem({ task: initialTask }: { task: TaskListItemProps }) {
+  const router = useRouter();
   const [task, setTask] = useState(initialTask);
   const [pending, setPending] = useState(false);
 
-  async function updateTask() {
+  const updateTask = async () => {
     setPending(true);
     try {
-      const updatedTask = await editTaskListItem({ ...task, completed: !task.completed });
+      const updatedTask = await editTaskAction({ ...task, completed: !task.completed });
       setTask(updatedTask);
     } finally {
       setPending(false);
     }
-  }
+  };
 
-  async function deleteTask(id: string) {
-    setPending(true);
-    try {
-      await deleteTaskListItem(id);
-    } finally {
-      setPending(false);
-    }
-  }
+  const viewTask = async () => {
+    router.push(`/tasks/${task.skey}`);
+  };
 
   return (
     <ListItem
       disablePadding
       secondaryAction={
-        <IconButton edge="end" disabled={pending} onClick={async () => await deleteTask(task.skey)} aria-label="delete">
-          <DeleteIcon />
+        <IconButton edge="end" disabled={pending} aria-label="delete" onClick={viewTask}>
+          <Visibility />
         </IconButton>
       }
     >
       <ListItemButton role={undefined} dense disabled={pending} onClick={updateTask}>
         <ListItemIcon>
-          <Checkbox edge="end" disableRipple aria-labelledby={task.skey} checked={task.completed} />
+          <Checkbox edge="end" disableRipple checked={task.completed} aria-labelledby={task.skey} />
         </ListItemIcon>
         <ListItemText id={task.skey} primary={task.content} className={task.completed ? clx.completed : ""} />
       </ListItemButton>

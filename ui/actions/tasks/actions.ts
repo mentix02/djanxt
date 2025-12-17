@@ -1,8 +1,8 @@
 "use server";
 
 import { headers } from "next/headers";
-import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import { notFound, redirect } from "next/navigation";
 
 import { auth } from "@/lib/auth";
 import { createFetch } from "@better-fetch/fetch";
@@ -10,7 +10,6 @@ import { createAuthHeaders } from "@/lib/api-auth";
 import {
   Task,
   TaskSchema,
-  TaskListItem,
   TaskCreateData,
   TaskListPaginated,
   TaskPaginationMetadata,
@@ -29,7 +28,25 @@ const $fetch = createFetch({
   baseURL: `${process.env.BACKEND_URL}/api/todo`,
 });
 
-export const createTask = async (newTaskData: TaskCreateData): Promise<FetchResponse<Task>> => {
+export const fetchTask = async (skey: string): Promise<Task> => {
+  const session = await auth.api.getSession({ headers: await headers() });
+
+  if (!session) redirect("/login");
+
+  const { data: task, error } = await $fetch(`/:skey/`, {
+    params: { skey },
+    output: TaskSchema,
+    headers: createAuthHeaders(session.user.access_key),
+  });
+
+  if (error)
+    if (error.status === 404) notFound();
+    else redirect("/error");
+
+  return task;
+};
+
+export const createTaskAction = async (newTaskData: TaskCreateData): Promise<FetchResponse<Task>> => {
   const session = await auth.api.getSession({ headers: await headers() });
 
   if (!session) redirect("/login");
@@ -47,7 +64,7 @@ export const createTask = async (newTaskData: TaskCreateData): Promise<FetchResp
   return { data: newTask, status: "ok" };
 };
 
-export const deleteTaskListItem = async (skey: string): Promise<void> => {
+export const deleteTaskAction = async (skey: string): Promise<void> => {
   const session = await auth.api.getSession({ headers: await headers() });
 
   if (!session) redirect("/login");
@@ -61,9 +78,10 @@ export const deleteTaskListItem = async (skey: string): Promise<void> => {
   if (error) redirect("/error");
 
   revalidatePath("/tasks");
+  redirect("/tasks");
 };
 
-export const editTaskListItem = async (task: TaskListItem): Promise<TaskListItem> => {
+export const editTaskAction = async (task: RequiredPartial<Task, "skey">): Promise<Task> => {
   const session = await auth.api.getSession({ headers: await headers() });
 
   if (!session) redirect("/login");
