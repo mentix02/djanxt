@@ -71,12 +71,16 @@ Create an `.env` file in the `ui` directory with the following content:
 
 ```dotenv
 BACKEND_URL=http://localhost:8000
-BETTER_AUTH_URL=http://localhost:3000
-
-BACKEND_URL=http://localhost:8000
-
 DATABASE_URL=<same_database_url_as_backend>
+
+BETTER_AUTH_URL=http://localhost:3000
 BETTER_AUTH_SECRET=<your_better_auth_secret_key>
+
+REDIS_URL=<redis_url>  # optional - only if you want to use secondaryStorage
+
+# Example config for social oauth providers (optional)
+GOOGLE_CLIENT_SECRET=<google_client_secret>
+GOOGLE_CLIENT_ID=<google_client_id>
 ```
 
 ## Running the Application
