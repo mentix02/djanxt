@@ -5,6 +5,7 @@ import { eq } from "drizzle-orm";
 import { createAuthMiddleware } from "better-auth/api";
 import { betterAuth, BetterAuthOptions } from "better-auth";
 // Plugins
+import { admin } from "better-auth/plugins";
 import { nextCookies } from "better-auth/next-js";
 import { customSession } from "better-auth/plugins";
 
@@ -39,6 +40,16 @@ const betterAuthOptions = {
   // Plugins
   plugins: [
     // Uncomment to enable one-tap sign-in by Google
+    admin({
+      schema: {
+        user: {
+          fields: {
+            banReason: "ban_reason",
+            banExpires: "ban_expires",
+          },
+        },
+      },
+    }),
     nextCookies(),
   ],
   // Email Verification

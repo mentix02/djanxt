@@ -29,22 +29,31 @@ class UserManager(BaseUserManager):
 
     def create_superuser(self, email: str, password, **extra_fields):
 
-        extra_fields.setdefault('is_staff', True)
-        extra_fields.setdefault('is_active', True)
-        extra_fields.setdefault('is_superuser', True)
-        extra_fields.setdefault('email_verified', True)
+        must_be_true_fields = ['is_staff', 'is_active', 'is_superuser', 'email_verified']
 
-        if not extra_fields.get('is_staff'):
-            raise ValueError(_('Superuser must have is_staff=True.'))
-        if not extra_fields.get('is_active'):
-            raise ValueError(_('Superuser must have is_active=True.'))
-        if not extra_fields.get('is_superuser'):
-            raise ValueError(_('Superuser must have is_superuser=True.'))
+        for field in must_be_true_fields:
+            extra_fields.setdefault(field, True)
+
+            if not extra_fields.get(field):
+                raise ValueError(_(f'Superuser must have {field}=True.'))
+
+        extra_fields.setdefault('role', User.ADMIN_ROLE)
+
+        if extra_fields.get('role') != User.ADMIN_ROLE:
+            raise ValueError(_('Superuser must have role=admin.'))
 
         return self.create_user(email, password, **extra_fields)
 
 
 class User(AbstractUser):
+
+    USER_ROLE = 'user'
+    ADMIN_ROLE = 'admin'
+
+    ROLE_CHOICES = (
+        (USER_ROLE, _('User')),
+        (ADMIN_ROLE, _('Admin')),
+    )
 
     objects = UserManager()
 
@@ -52,15 +61,27 @@ class User(AbstractUser):
     last_name = None
     first_name = None
 
-    updated_at = models.DateTimeField(auto_now=True)
-    image = models.TextField(validators=[URLValidator()], blank=True, null=True, default=None)
-
-    email_verified = models.BooleanField(default=False)
     email = models.EmailField(_('email address'), unique=True)
     password = models.CharField(max_length=128, blank=True, db_default='')
+    access_key = models.CharField(max_length=32, default=generate_secret_key)
+
+    # Better-Auth core fields
 
     name = models.TextField(blank=True, default='')
-    access_key = models.CharField(max_length=32, default=generate_secret_key)
+    updated_at = models.DateTimeField(auto_now=True)
+    email_verified = models.BooleanField(default=False)
+    image = models.TextField(validators=[URLValidator()], blank=True, null=True, default=None)
+
+    # Better-Auth admin() plugin fields
+    ban_reason = models.TextField(blank=True, null=True, default=None)
+    role = models.TextField(choices=ROLE_CHOICES, db_default=USER_ROLE, blank=True)
+    banned = models.BooleanField(db_default=False, blank=True, null=True, default=False)
+    ban_expires = models.DateTimeField(
+        blank=True,
+        null=True,
+        default=None,
+        help_text="The date when the user's ban will expire.",
+    )
 
     REQUIRED_FIELDS = []
     USERNAME_FIELD = 'email'
@@ -85,6 +106,9 @@ class BetterAuthSession(models.Model):
     userAgent = models.TextField(blank=True, null=True, default=None)
     ipAddress = models.TextField(blank=True, null=True, default=None)
     # Don't use models.GenericIPAddressField - brighter minds than you have tried and failed.
+
+    # Admin plugin fields
+    impersonatedBy = models.TextField(blank=True, null=True, default=None)
 
     class Meta:
         db_table = 'better_auth_session'
