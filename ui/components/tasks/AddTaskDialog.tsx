@@ -14,7 +14,7 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 
-import { createTask } from "@/actions/tasks/actions";
+import { createTaskAction } from "@/actions/tasks/actions";
 import { TaskCreateData, TaskCreateDataSchema } from "@/actions/tasks/types";
 
 interface AddTaskDialogProps {
@@ -34,7 +34,7 @@ export default function AddTaskDialog({ open, onClose }: AddTaskDialogProps) {
   });
 
   const createTaskHandler: SubmitHandler<TaskCreateData> = async (values) => {
-    await createTask(values);
+    await createTaskAction(values);
     reset();
     onClose();
   };
