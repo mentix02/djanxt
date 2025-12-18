@@ -11,9 +11,6 @@ BETTER_AUTH_CREDENTIALS_PROVIDER_ID = 'credential'
 def create_better_auth_account(sender: type[User], instance: User = None, created: bool = False, **kwargs):
     BetterAuthAccount.objects.update_or_create(
         user=instance,
-        defaults={
-            'accountId': instance.id,
-            'password': instance.password,
-            'providerId': BETTER_AUTH_CREDENTIALS_PROVIDER_ID,
-        },
+        providerId=BETTER_AUTH_CREDENTIALS_PROVIDER_ID,
+        defaults={'accountId': instance.id, 'password': instance.password},
     )
