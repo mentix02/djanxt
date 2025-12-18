@@ -17,20 +17,5 @@ export default async function Page() {
 
   if (!session) redirect("/login?next=/account");
 
-  return (
-    <Grid container alignItems="center" justifyContent="center" minHeight="90dvh">
-      <Grid size={{ xs: 12, sm: 12, md: 8, lg: 6 }}>
-        <Paper
-          elevation={3}
-          sx={{
-            boxShadow: 4,
-            borderRadius: 3,
-            p: { xs: 3, sm: 4 },
-          }}
-        >
-          <UpdateAccountForm />
-        </Paper>
-      </Grid>
-    </Grid>
-  );
+  return <UpdateAccountForm />;
 }
