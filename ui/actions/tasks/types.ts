@@ -18,6 +18,7 @@ export const TaskSchema = z.object({
 export const TaskListItemSchema = TaskSchema.omit({ description: true });
 export const TaskCreateDataSchema = z.object({
   ...TaskSchema.omit({ skey: true, timestamp: true }).shape,
+  content: z.string().nonempty("Please enter a task."),
   completed: z.boolean().optional(),
 });
 
