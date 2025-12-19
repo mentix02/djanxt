@@ -10,10 +10,6 @@ post {
   auth: inherit
 }
 
-headers {
-  Authorization: Token {{access_key}}
-}
-
 body:json {
   {
     "content": "{{$randomLoremSentence}}",

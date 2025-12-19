@@ -1,5 +1,9 @@
 auth {
-  mode: none
+  mode: bearer
+}
+
+auth:bearer {
+  token: {{bearer_token}}
 }
 
 vars:pre-request {
