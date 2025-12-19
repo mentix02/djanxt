@@ -51,11 +51,8 @@ const betterAuthOptions = {
       },
     }),
     jwt({
+      jwks: { keyPairConfig: { alg: "RS256" } },
       schema: { jwks: { modelName: "better_auth_jwk" } },
-      jwks: {
-        keyPairConfig: { alg: "RS256" },
-        disablePrivateKeyEncryption: true,
-      },
       jwt: {
         definePayload: ({ user }) => ({
           user_id: user.id,
