@@ -11,8 +11,8 @@ import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 
-import { editTaskAction } from "@/actions/tasks/actions";
 import { Task, TaskSchema } from "@/actions/tasks/types";
+import { editTaskAction, deleteTaskAction } from "@/actions/tasks/actions";
 
 interface EditTaskProps {
   task: Task;
@@ -27,6 +27,10 @@ export default function EditTask({ task: initialTask }: EditTaskProps) {
     defaultValues: initialTask,
     resolver: zodResolver(TaskSchema),
   });
+
+  const deleteTask = async () => {
+    await deleteTaskAction(initialTask.skey);
+  };
 
   const editTaskHandler: SubmitHandler<Task> = async (values) => {
     await editTaskAction(values);
@@ -47,6 +51,10 @@ export default function EditTask({ task: initialTask }: EditTaskProps) {
               <TextFieldElement fullWidth name="description" control={control} label="Description" multiline rows={4} />
 
               <CheckboxElement name="completed" control={control} label="Completed" />
+
+              <Button onClick={deleteTask} color="error">
+                Delete Task
+              </Button>
 
               <Button type="submit" variant="contained" color="primary" loading={isSubmitting}>
                 {isSubmitting ? "Updating..." : "Update Task"}
