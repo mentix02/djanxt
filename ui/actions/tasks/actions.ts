@@ -1,12 +1,10 @@
 "use server";
 
-import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { notFound, redirect } from "next/navigation";
 
-import { auth } from "@/lib/auth";
+import getBearerToken from "@/lib/api-auth";
 import { createFetch } from "@better-fetch/fetch";
-import { createAuthHeaders } from "@/lib/api-auth";
 import {
   Task,
   TaskSchema,
@@ -26,17 +24,13 @@ export interface TaskQueryParams {
 
 const $fetch = createFetch({
   baseURL: `${process.env.BACKEND_URL}/api/todo`,
+  auth: { type: "Bearer", token: getBearerToken },
 });
 
 export const fetchTask = async (skey: string): Promise<Task> => {
-  const session = await auth.api.getSession({ headers: await headers() });
-
-  if (!session) redirect("/login");
-
-  const { data: task, error } = await $fetch(`/:skey/`, {
+  const { data: task, error } = await $fetch("/:skey/", {
     params: { skey },
     output: TaskSchema,
-    headers: createAuthHeaders(session.user.access_key),
   });
 
   if (error)
@@ -47,15 +41,10 @@ export const fetchTask = async (skey: string): Promise<Task> => {
 };
 
 export const createTaskAction = async (newTaskData: TaskCreateData): Promise<FetchResponse<Task>> => {
-  const session = await auth.api.getSession({ headers: await headers() });
-
-  if (!session) redirect("/login");
-
   const { data: newTask, error } = await $fetch("/", {
     method: "POST",
     body: newTaskData,
     output: TaskSchema,
-    headers: createAuthHeaders(session.user.access_key),
   });
 
   if (error) return { error: error.message || "Something went wrong.", status: "err" };
@@ -65,14 +54,9 @@ export const createTaskAction = async (newTaskData: TaskCreateData): Promise<Fet
 };
 
 export const deleteTaskAction = async (skey: string): Promise<void> => {
-  const session = await auth.api.getSession({ headers: await headers() });
-
-  if (!session) redirect("/login");
-
-  const { error } = await $fetch(`/:skey/`, {
+  const { error } = await $fetch("/:skey/", {
     method: "DELETE",
     params: { skey },
-    headers: createAuthHeaders(session.user.access_key),
   });
 
   if (error) redirect("/error");
@@ -82,16 +66,11 @@ export const deleteTaskAction = async (skey: string): Promise<void> => {
 };
 
 export const editTaskAction = async (task: RequiredPartial<Task, "skey">): Promise<Task> => {
-  const session = await auth.api.getSession({ headers: await headers() });
-
-  if (!session) redirect("/login");
-
-  const { data: updatedTask, error } = await $fetch(`/:skey/`, {
+  const { data: updatedTask, error } = await $fetch("/:skey/", {
     body: task,
     method: "PATCH",
     output: TaskSchema,
     params: { skey: task.skey },
-    headers: createAuthHeaders(session.user.access_key),
   });
 
   if (error) redirect("/error");
@@ -101,10 +80,6 @@ export const editTaskAction = async (task: RequiredPartial<Task, "skey">): Promi
 
 export const fetchMetadata = async (params: TaskQueryParams): Promise<FetchResponse<TaskPaginationMetadata>> => {
   const { q, completed, page = 1 } = params;
-  const session = await auth.api.getSession({ headers: await headers() });
-
-  if (!session) return { error: "You must be logged in to view your tasks.", status: "err" };
-
   const queryParams = new URLSearchParams();
 
   queryParams.set("page", page.toString());
@@ -113,7 +88,6 @@ export const fetchMetadata = async (params: TaskQueryParams): Promise<FetchRespo
 
   const { data: metadata, error } = await $fetch(`/metadata/?${queryParams.toString()}`, {
     output: TaskPaginationMetadataSchema,
-    headers: createAuthHeaders(session.user.access_key),
   });
 
   if (error) return { error: error.message || "Something went wrong.", status: "err" };
@@ -123,9 +97,6 @@ export const fetchMetadata = async (params: TaskQueryParams): Promise<FetchRespo
 
 export const fetchTasks = async (params: TaskQueryParams): Promise<FetchResponse<TaskListPaginated>> => {
   const { q, completed, ordering, page = 1 } = params;
-  const session = await auth.api.getSession({ headers: await headers() });
-
-  if (!session) return { error: "You must be logged in to view your tasks.", status: "err" };
 
   const queryParams = new URLSearchParams();
 
@@ -136,7 +107,6 @@ export const fetchTasks = async (params: TaskQueryParams): Promise<FetchResponse
 
   const { data: paginatedTasks, error } = await $fetch(`/?${queryParams.toString()}`, {
     output: TaskListPaginatedSchema,
-    headers: createAuthHeaders(session.user.access_key),
   });
 
   if (error) return { error: error.message || "Something went wrong.", status: "err" };

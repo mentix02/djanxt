@@ -7,7 +7,7 @@ import { betterAuth, BetterAuthOptions } from "better-auth";
 // Plugins
 import { admin } from "better-auth/plugins";
 import { nextCookies } from "better-auth/next-js";
-import { customSession } from "better-auth/plugins";
+import { jwt, customSession } from "better-auth/plugins";
 
 import { sendVerificationEmail, sendResetPasswordEmail } from "@/lib/email";
 import db, { pgPool, userTable, hashPassword, verifyPassword } from "@/lib/database";
@@ -48,6 +48,22 @@ const betterAuthOptions = {
             banExpires: "ban_expires",
           },
         },
+      },
+    }),
+    jwt({
+      schema: { jwks: { modelName: "better_auth_jwk" } },
+      jwks: {
+        keyPairConfig: { alg: "RS256" },
+        disablePrivateKeyEncryption: true,
+        jwksPath: "/.well-known/jwks.json",
+      },
+      jwt: {
+        definePayload: ({ user }) => ({
+          user_id: user.id,
+          token_type: "access",
+          // Really important for drf-simplejwt
+          jti: crypto.randomUUID().replace(/-/g, ""),
+        }),
       },
     }),
     nextCookies(),
@@ -114,12 +130,6 @@ const betterAuthOptions = {
       is_staff: { type: "boolean", defaultValue: false, required: true, input: false },
       is_active: { type: "boolean", defaultValue: true, required: true, input: false },
       is_superuser: { type: "boolean", defaultValue: false, required: true, input: false },
-      access_key: {
-        type: "string",
-        required: true,
-        input: false,
-        defaultValue: () => crypto.randomBytes(24).toString("base64url"),
-      },
     },
   },
 } satisfies BetterAuthOptions;
