@@ -51,6 +51,8 @@ Now create an .env file in the root directory with the following content:
 DEBUG=True
 SECRET_KEY=<your_django_secret_key>
 DATABASE_URL=postgres://<db_user>:<db_password>@<db_host>:<db_port>/<db_name>
+# Should use wherever you host your frontend + /api/auth/jwks endpoint
+JWK_URL=http://localhost:3000/api/auth/jwks
 ```
 
 Run your database migrations:
