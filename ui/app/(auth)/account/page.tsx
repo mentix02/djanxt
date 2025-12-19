@@ -14,5 +14,8 @@ export default async function Page() {
 
   if (!session) redirect("/login?next=/account");
 
-  return <UpdateAccountForm />;
+  const accounts = await auth.api.listUserAccounts({ headers: await headers() });
+  const hasPassword = !!accounts.find((account) => account.providerId === "credential");
+
+  return <UpdateAccountForm hasPassword={hasPassword} user={session.user} />;
 }
