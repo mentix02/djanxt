@@ -38,6 +38,7 @@ export const SetPasswordSchema = z
   })
   .refine((data) => data.password === data.confirmPassword, {
     error: "Passwords do not match",
+    path: ["confirmPassword"],
   });
 
 export const UpdatePasswordSchema = z
