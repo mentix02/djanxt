@@ -12,8 +12,8 @@ class UserAdmin(BaseUserAdmin):
     ordering = ('name',)
     list_filter = ('email_verified',)
     search_fields = ('name', 'email')
+    readonly_fields = ('last_login', 'avatar', 'image')
     list_display = ('name', 'email', 'is_staff', 'email_verified')
-    readonly_fields = ('last_login', 'access_key', 'avatar', 'image')
 
     def avatar(self, obj: User) -> str:
         if obj.image:
@@ -33,7 +33,6 @@ class UserAdmin(BaseUserAdmin):
         (None, {'fields': ('email', 'password')}),
         (_('Personal info'), {'fields': ('name',)}),
         (_('Image'), {'fields': ('image', 'avatar')}),
-        (_('Credentials'), {'fields': ('access_key',)}),
         (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
         (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
     )
