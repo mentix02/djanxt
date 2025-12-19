@@ -55,7 +55,6 @@ const betterAuthOptions = {
       jwks: {
         keyPairConfig: { alg: "RS256" },
         disablePrivateKeyEncryption: true,
-        jwksPath: "/.well-known/jwks.json",
       },
       jwt: {
         definePayload: ({ user }) => ({
