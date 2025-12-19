@@ -16,11 +16,15 @@ One of the key features of BetterAuth is how it manages the databases for you. U
 
 ### Sharing the Database
 
-Since Next.js is more of a "frontend" framework, we use Django (which is more of the "backend" framework) to manage the databases. The [`models.py`](../apps/user/models.py) file under the `user` app contains the models for the database required by BetterAuth. Django + BetterAuth share the `user_user` table. The extensible [`lib/auth.ts`](lib/auth.ts) file contains the authentication logic along with the customized table fields and names.
+Since Next.js is more of a "frontend" framework, we use Django (which is more of the "backend" framework) to manage the databases. The [`models.py`](../apps/user/models.py) file under the `user` app contains the models for the database required by BetterAuth. Django + BetterAuth share the `user_user` table. The extensible [`lib/auth.ts`](lib/auth.ts) file contains the authentication logic along with the customised table fields and names.
 
 ### Password Hashing
 
 Since this project uses Bun, we utilise the powerful `Bun.password.hash` and `Bun.password.verify` functions to hash and verify passwords. For Django, we install `argon2-cffi`. We limit the parallelism of the Django hasher to 1 because Bun is single threaded.
+
+### JWT / JWKs
+
+The `jwt()` plugin from BetterAuth is used to issue JWT tokens for the frontend. Whenever we make an API call to the backend, this token is set as the Bearer token in the Authorization header. The backend verifies these tokens using the JWKs exposed by the frontend at the `/api/auth/jwks/` endpoint.
 
 ### Session Management
 
@@ -38,7 +42,6 @@ $ python manage.py migrate
 ```
 
 ### Confirming Synchronization
-
 
 To confirm that the migrations have been successfully applied to suit the schemas required by BetterAuth, run the generate command and check if the schema is up to date. There is, however, a small caveat:
 

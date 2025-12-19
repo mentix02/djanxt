@@ -9,6 +9,7 @@ An opinionated Django + Next.js template.
   - Psycopg 3
   - Argon2 (argon2-cffi)
   - Django REST Framework 3.16
+  - DRF Simple JWT 5.5.1
 - Frontend (TypeScript)
   - Bun 1.3
   - React 19
@@ -17,17 +18,19 @@ An opinionated Django + Next.js template.
   - Better-Auth 1.4
 - Database (PostgreSQL 17)
 
-Django uses a custom authentication middleware inspired by DRF's token authentication.
-Each user has an `access_key` field generated on creation, used by the frontend for making
-authenticated requests.
+Django use Django REST Framework to expose a REST API for the frontend. The API is protected
+using JWT tokens via DRF Simple JWT. The backend is configured to verify JWKs from the exposed
+`/api/auth/jwks/` endpoint of the _"frontend"_. Note: the backend will never issue tokens itself.
+It will only ever verify them.
 
-The frontend itself uses Better-Auth for authentication management. The database tables are
+The _"frontend"_ itself uses Better-Auth for authentication management. The database tables are
 configured to be shared and synchronised between Django and Next.js. Refer to 
-[`lib/auth.ts`](ui/lib/auth.ts) for more details.
+[`lib/auth.ts`](ui/lib/auth.ts) for more details. The `jwt()` plugin is used to issue JWT tokens
+that the backend can verify.
 
 Django + Better-Auth are both configured to use Argon2 for password hashing. It keeps the password
 layer compatible between both frameworks. Better-Auth is tweaked to store the hashes in Django's
-own format. Django is also configured to insert necessary fields in the database for Better-Auth
+own format. Django is also configured to insert necessary rows in the database for Better-Auth
 and signals to keep them synchronised.
 
 ## Installation
@@ -76,7 +79,8 @@ DATABASE_URL=<same_database_url_as_backend>
 BETTER_AUTH_URL=http://localhost:3000
 BETTER_AUTH_SECRET=<your_better_auth_secret_key>
 
-REDIS_URL=<redis_url>  # optional - only if you want to use secondaryStorage
+# optional - only if you want to use secondaryStorage
+REDIS_URL=<redis_url>
 
 # Example config for social oauth providers (optional)
 GOOGLE_CLIENT_SECRET=<google_client_secret>
