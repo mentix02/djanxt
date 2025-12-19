@@ -1,15 +1,8 @@
-import secrets
-
 from django.db import models
 from django.core.validators import URLValidator
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.base_user import BaseUserManager
-
-
-def generate_secret_key() -> str:
-    """Generate a random secret key of length 32."""
-    return secrets.token_urlsafe(24)
 
 
 class UserManager(BaseUserManager):
@@ -63,7 +56,6 @@ class User(AbstractUser):
 
     email = models.EmailField(_('email address'), unique=True)
     password = models.CharField(max_length=128, blank=True, db_default='')
-    access_key = models.CharField(max_length=32, default=generate_secret_key)
 
     # Better-Auth core fields
 
@@ -148,3 +140,14 @@ class BetterAuthVerification(models.Model):
 
     class Meta:
         db_table = 'better_auth_verification'
+
+
+class BetterAuthJWK(models.Model):
+
+    publicKey = models.TextField()
+    privateKey = models.TextField()
+    createdAt = models.DateTimeField(auto_now_add=True)
+    expiresAt = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        db_table = 'better_auth_jwk'
