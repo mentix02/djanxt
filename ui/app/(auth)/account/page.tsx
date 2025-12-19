@@ -2,9 +2,6 @@ import { Metadata } from "next";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
-import Grid from "@mui/material/Grid";
-import Paper from "@mui/material/Paper";
-
 import { auth } from "@/lib/auth";
 import UpdateAccountForm from "@/components/auth/UpdateAccountForm";
 
