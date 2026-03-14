@@ -2,16 +2,23 @@ import List from "@mui/material/List";
 
 import Box from "@mui/material/Box";
 
+import $fetch from "@/lib/fetch";
 import AddTask from "@/components/tasks/AddTask";
 import ErrorView from "@/components/layout/ErrorView";
 import TaskListItem from "@/components/tasks/TaskListItem";
 import EmptyTaskBox from "@/components/tasks/EmptyTaskBox";
-import { fetchTasks, TaskQueryParams } from "@/actions/tasks/actions";
+import { TaskQueryParams, TaskListPaginated, ErrorFetchResponse, SuccessFetchResponse } from "@/actions/tasks/types";
 
 interface TaskListProps {
   currentPage: number;
   query: TaskQueryParams;
 }
+
+const fetchTasks = async (query: TaskQueryParams): Promise<FetchResponse<TaskListPaginated>> => {
+  const { data, error } = await $fetch("@get/", { query });
+  if (error) return ErrorFetchResponse(error.message || "Couldn't fetch tasks at the moment. Please try again later.");
+  return SuccessFetchResponse(data);
+};
 
 export default async function TaskList({ currentPage, query }: TaskListProps) {
   const { q, completed, ordering } = query;

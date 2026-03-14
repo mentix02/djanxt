@@ -16,7 +16,7 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import { signIn } from "@/lib/auth-client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { CheckboxElement, TextFieldElement } from "react-hook-form-mui";
+import { CheckboxElement, TextFieldElement, PasswordElement } from "react-hook-form-mui";
 
 import Google from "@mui/icons-material/Google";
 
@@ -91,15 +91,7 @@ export default function LoginForm() {
                 inputRef={emailRef}
                 autoComplete="email"
               />
-              <TextFieldElement
-                required
-                fullWidth
-                name="password"
-                type="password"
-                label="Password"
-                control={control}
-                autoComplete="current-password"
-              />
+              <PasswordElement required fullWidth name="password" label="Password" control={control} />
 
               <FormControlLabel control={<CheckboxElement name="rememberMe" control={control} />} label="Remember me" />
 

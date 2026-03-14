@@ -27,6 +27,7 @@ export default function AddTaskDialog({ open, onClose }: AddTaskDialogProps) {
   const {
     reset,
     control,
+    setError,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<TaskCreateData>({
@@ -34,9 +35,13 @@ export default function AddTaskDialog({ open, onClose }: AddTaskDialogProps) {
   });
 
   const createTaskHandler: SubmitHandler<TaskCreateData> = async (values) => {
-    await createTaskAction(values);
-    reset();
-    onClose();
+    const response = await createTaskAction(values);
+    if (response.status === "err") {
+      setError("root.non_field_errors", { message: response.error });
+    } else {
+      reset();
+      onClose();
+    }
   };
 
   useEffect(() => {

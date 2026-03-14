@@ -1,4 +1,4 @@
-// import { redis } from "bun";
+import { redis } from "bun";
 import * as crypto from "crypto";
 
 import { eq } from "drizzle-orm";
@@ -22,12 +22,12 @@ const betterAuthOptions = {
   // better-sqlite - and the CLI needs it. It's dumb, I know. To generate schemas
   // and process the migrations, just uncomment the Bun import and the secondaryStorage.
 
-  // secondaryStorage: {
-  //   get: async (key: string) => await redis.get(key),
-  //   delete: async (key: string) => void (await redis.del(key)),
-  //   set: async (key: string, value: string, ttl?: number) =>
-  //     await (ttl ? redis.set(key, value, "EX", ttl) : redis.set(key, value)),
-  // },
+  secondaryStorage: {
+    get: async (key: string) => await redis.get(key),
+    delete: async (key: string) => void (await redis.del(key)),
+    set: async (key: string, value: string, ttl?: number) =>
+      await (ttl ? redis.set(key, value, "EX", ttl) : redis.set(key, value)),
+  },
 
   // Social Providers
   // Uncomment and configure the providers you want to use.
@@ -39,7 +39,6 @@ const betterAuthOptions = {
   },
   // Plugins
   plugins: [
-    // Uncomment to enable one-tap sign-in by Google
     admin({
       schema: {
         user: {
@@ -68,6 +67,7 @@ const betterAuthOptions = {
   emailVerification: {
     sendOnSignIn: true,
     sendOnSignUp: true,
+    autoSignInAfterVerification: true,
     sendVerificationEmail: sendVerificationEmail,
   },
   // Email & password configuration.
