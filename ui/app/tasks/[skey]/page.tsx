@@ -1,12 +1,12 @@
 import { Metadata } from "next";
 import { headers } from "next/headers";
-import { redirect } from "next/navigation";
+import { redirect, notFound } from "next/navigation";
 
 import Container from "@mui/material/Container";
 
+import $fetch from "@/lib/fetch";
 import { auth } from "@/lib/auth";
 import EditTask from "@/components/tasks/EditTask";
-import { fetchTask } from "@/actions/tasks/actions";
 
 export const metadata: Metadata = {
   title: "Edit Task",
@@ -16,6 +16,12 @@ export const metadata: Metadata = {
 interface PageProps {
   params: Promise<{ skey: string }>;
 }
+
+const fetchTask = async (skey: string) => {
+  const { data, error } = await $fetch("@get/:skey/", { params: { skey } });
+  if (error) notFound();
+  return data;
+};
 
 export default async function Page({ params }: PageProps) {
   const { skey } = await params;

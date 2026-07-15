@@ -15,8 +15,8 @@ import LinearProgress from "@mui/material/LinearProgress";
 
 import { signUp, signIn } from "@/lib/auth-client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { TextFieldElement } from "react-hook-form-mui";
 import { useForm, SubmitHandler } from "react-hook-form";
+import { TextFieldElement, PasswordElement } from "react-hook-form-mui";
 
 import Google from "@mui/icons-material/Google";
 
@@ -92,11 +92,10 @@ export default function SignupForm() {
                 autoComplete="email"
                 control={control}
               />
-              <TextFieldElement
+              <PasswordElement
                 required
                 fullWidth
                 name="password"
-                type="password"
                 label="Password"
                 control={control}
                 autoComplete="new-password"

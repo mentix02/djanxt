@@ -1,5 +1,6 @@
 "use client";
 
+import { MouseEvent } from "react";
 import { enqueueSnackbar } from "notistack";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, SubmitHandler } from "react-hook-form";
@@ -28,7 +29,8 @@ export default function EditTask({ task: initialTask }: EditTaskProps) {
     resolver: zodResolver(TaskSchema),
   });
 
-  const deleteTask = async () => {
+  const deleteTaskHandler = async (e: MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
     await deleteTaskAction(initialTask.skey);
   };
 
@@ -52,7 +54,7 @@ export default function EditTask({ task: initialTask }: EditTaskProps) {
 
               <CheckboxElement name="completed" control={control} label="Completed" />
 
-              <Button onClick={deleteTask} color="error">
+              <Button onClick={deleteTaskHandler} color="error">
                 Delete Task
               </Button>
 
